@@ -140,7 +140,8 @@ class Config
         return $options
             ->merge($this->customOptions)
             ->merge($this->getSaslOptions())
-            ->reject(fn (string $option) => in_array($option, self::PRODUCER_ONLY_CONFIG_OPTIONS))
+            ->filter()
+            ->reject(fn (mixed $option) => in_array($option, self::PRODUCER_ONLY_CONFIG_OPTIONS))
             ->toArray();
     }
     #[Pure]
@@ -156,7 +157,8 @@ class Config
         return $config
             ->merge($this->customOptions)
             ->merge($this->getSaslOptions())
-            ->reject(fn (string $option) => in_array($option, self::CONSUMER_ONLY_CONFIG_OPTIONS))
+            ->filter()
+            ->reject(fn (mixed $option) => in_array($option, self::CONSUMER_ONLY_CONFIG_OPTIONS))
             ->toArray();
     }
 
