@@ -124,34 +124,39 @@ class Config
 
     public function getConsumerOptions(): array
     {
-        $options = [
+        $options = collect([
             'metadata.broker.list' => $this->broker,
             'auto.offset.reset' => config('kafka.offset_reset', 'latest'),
             'enable.auto.commit' => config('kafka.auto_commit', true) === true ? 'true' : 'false',
             'group.id' => $this->groupId,
             'bootstrap.servers' => $this->broker,
-        ];
+            'ssl.ca.location' => config('kafka.ssl_ca_location'),
+        ]);
 
         if (isset($this->autoCommit)) {
-            $options['enable.auto.commit'] = $this->autoCommit === true ? 'true' : 'false';
+            $options->offsetSet('enable.auto.commit', $this->autoCommit === true ? 'true' : 'false');
         }
 
-        return collect(array_merge($options, $this->customOptions, $this->getSaslOptions()))
-            ->reject(fn ($option) => in_array($option, self::PRODUCER_ONLY_CONFIG_OPTIONS))
+        return $options
+            ->merge($this->customOptions)
+            ->merge($this->getSaslOptions())
+            ->reject(fn (string $option) => in_array($option, self::PRODUCER_ONLY_CONFIG_OPTIONS))
             ->toArray();
     }
-
     #[Pure]
     public function getProducerOptions(): array
     {
-        $config = [
+        $config = collect([
             'compression.codec' => 'snappy',
             'bootstrap.servers' => $this->broker,
             'metadata.broker.list' => $this->broker,
-        ];
+            'ssl.ca.location' => config('kafka.ssl_ca_location'),
+        ]);
 
-        return collect(array_merge($config, $this->customOptions, $this->getSaslOptions()))
-            ->reject(fn ($option) => in_array($option, self::CONSUMER_ONLY_CONFIG_OPTIONS))
+        return $config
+            ->merge($this->customOptions)
+            ->merge($this->getSaslOptions())
+            ->reject(fn (string $option) => in_array($option, self::CONSUMER_ONLY_CONFIG_OPTIONS))
             ->toArray();
     }
 

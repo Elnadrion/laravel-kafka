@@ -48,4 +48,9 @@ return [
      | Implement BatchRepositoryInterface to save batches in different storage
      */
     'batch_repository' => env('KAFKA_BATCH_REPOSITORY', \Junges\Kafka\BatchRepositories\InMemoryBatchRepository::class),
+
+    /*
+     | CA file absolute path.
+     */
+    'ssl_ca_location' => env('KAFKA_SSL_CA_LOCATION', null)
 ];
